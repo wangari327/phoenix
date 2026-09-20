@@ -37,6 +37,7 @@ from bot.helper.mirror_utils.rclone_utils.transfer import RcloneTransferHelper
 from bot.helper.telegram_helper.message_utils import sendCustomMsg, sendMessage, editMessage, deleteMessage, delete_all_messages, delete_links, sendMultiMessage, update_all_messages
 from bot.helper.telegram_helper.button_build import ButtonMaker
 from bot.helper.ext_utils.db_handler import DbManger
+from bot.helper.ext_utils.weekly_leech_banter import maybe_send_weekly_leech_banter
 from bot.helper.themes import BotTheme
 
 
@@ -281,409 +282,142 @@ class MirrorLeechListener:
                 up_path = f"{up_path}.zip"
             elif self.seed and self.isLeech:
                 self.newDir = f"{self.dir}10000"
-                up_path = f"{self.newDir}/{name}.zip"
-            else:
-                up_path = f"{dl_path}.zip"
-            async with download_dict_lock:
-                download_dict[self.uid] = ZipStatus(name, size, gid, self)
-            LEECH_SPLIT_SIZE = user_dict.get('split_size', False) or config_dict['LEECH_SPLIT_SIZE']
-            cmd = ["7z", f"-v{LEECH_SPLIT_SIZE}b", "a",
-                   "-mx=0", f"-p{pswd}", up_path, dl_path]
-            for ext in GLOBAL_EXTENSION_FILTER:
-                ex_ext = f'-xr!*.{ext}'
-                cmd.append(ex_ext)
-            if self.isLeech and int(size) > LEECH_SPLIT_SIZE:
-                if not pswd:
-                    del cmd[4]
-                LOGGER.info(f'Zip: orig_path: {dl_path}, zip_path: {up_path}.0*')
-            else:
-                del cmd[1]
-                if not pswd:
-                    del cmd[3]
-                LOGGER.info(f'Zip: orig_path: {dl_path}, zip_path: {up_path}')
-            if self.suproc == 'cancelled':
-                return
-            self.suproc = await create_subprocess_exec(*cmd)
-            code = await self.suproc.wait()
-            if code == -9:
-                return
-            elif not self.seed:
-                await clean_target(dl_path)
+                up_path×½¹¶‰Ëkºwµç[ØYÜİ]\Âˆ]ØZ]\]WØ[ÛY\ÜØYÙ\Ê
+B‚ˆ]ØZ]Ş[˜×İ×Ø\Ş[˜Êš]™K\ØY\Û˜[YKÚ^™KÙ[‹™š]™WÚY
+Bˆ[YˆÙ[‹\]OH	Ù	Î‚ˆÚ^™HH]ØZ]Ù]Ü]ÜÚ^™J\Ü]
+BˆÑÑÑT‹š[™›Êˆ•\ØY˜[YNˆİ\Û˜[Y_HšXHŠBˆH\ØY\ŠÙ[‹\Û˜[YK\Ù\ŠBˆİ\ØYÜİ]\ÈHİ]\ÊÚ^™KÙ[‹›Y\ÜØYÙKÚYÙ[‹\ØYÙ]Z[ÊBˆ\Ş[˜ÈÚ]İÛ›ØYÙXİÛØÚÎ‚ˆİÛ›ØYÙXİÜÙ[‹ZYHHİ\ØYÜİ]\Âˆ]ØZ]\]WØ[ÛY\ÜØYÙ\Ê
+Bˆ]ØZ]\ØY
+\Û˜[YKÚ^™JBˆ[ÙN‚ˆÚ^™HH]ØZ]Ù]Ü]ÜÚ^™J\Ü]
+BˆÑÑÑT‹š[™›Êˆ•\ØY˜[YNˆİ\Û˜[Y_HšXHÛÛ™HŠBˆÕ˜[œÙ™\ˆH˜ÛÛ™U˜[œÙ™\’[\ŠÙ[‹\Û˜[YJBˆ\Ş[˜ÈÚ]İÛ›ØYÙXİÛØÚÎ‚ˆİÛ›ØYÙXİÜÙ[‹ZYHH˜ÛÛ™Tİ]\ÊˆÕ˜[œÙ™\‹Ù[‹›Y\ÜØYÙKÚY	İ\	ËÙ[‹\ØYÙ]Z[ÊBˆ]ØZ]\]WØ[ÛY\ÜØYÙ\Ê
+Bˆ]ØZ]Õ˜[œÙ™\‹\ØY
+\Ü]Ú^™JB‚ˆ\Ş[˜ÈYˆÛ•\ØYÛÛ\]JÙ[‹[šËÚ^™Kš[\Ë›Û\œËZ[YWİ\K˜[YK˜ÛÛ™T]IÉËš]˜]OQ˜[ÙJN‚ˆYˆÙ[‹š\Ôİ\\‘Ü›İ\[™ÛÛ™šY×ÙXİÉÒSÓÓTUWÕTÒ×Ó“ÕQ’QT‰×H[™UPTÑWÕT“‚ˆ]ØZ]“X[™Ù\Š
+Kœ›WØÛÛ\]Wİ\ÚÊÙ[‹›Y\ÜØYÙK›[šÊBˆ\Ù\—ÚYHÙ[‹›Y\ÜØYÙK™œ›ÛWİ\Ù\‹šYˆ˜[YKÈH]ØZ]›Ü›X]Ùš[[˜[YJ˜[YK\Ù\—ÚY\ÓZ\œ›Ü[›İÙ[‹š\ÓYXÚ
+Bˆ\Ù\—ÙXİH\Ù\—Ù]K™Ù]
+\Ù\—ÚYßJBˆ\ÙÈH›İ[YJ	ÓSQIË˜[YOH•\ÚÈ\È™Y[ˆÛÛ\]YHšYˆÛÛ™šY×ÙXİÉÔĞQ‘WÓSÑI×H[™Ù[‹š\Ôİ\\‘Ü›İ\[ÙH\ØØ\J˜[YJJBˆ\ÙÈ
+ÏH›İ[YJ	ÔÒV‘IËÚ^™OYÙ]Ü™XYX›WÙš[WÜÚ^™JÚ^™JJBˆ\ÙÈ
+ÏH›İ[YJ	ÑSTÑIË[YOYÙ]Ü™XYX›Wİ[YJ[YJ
+HHÙ[‹›Y\ÜØYÙK™]K[Y\İ[\
 
-        if not self.compress and not self.extract:
-            up_path = dl_path
+JJBˆ\ÙÈ
+ÏH›İ[YJ	ÓSÑIË[ÙO\Ù[‹\ØYÙ]Z[ÖÉÛ[ÙI×JBˆÑÑÑT‹š[™›Ê‰Õ\ÚÈÛ™NˆÛ˜[Y_IÊBˆˆ]ÛœÈH]Û“XZÙ\Š
+BˆYˆÙ[‹š\ÓYXÚ‚ˆ\ÙÈ
+ÏH›İ[YJ	ÓÕÕSÑ’STÉËš[\ÏY›Û\œÊBˆYˆZ[YWİ\HOH‚ˆ\ÙÈ
+ÏH›İ[YJ	ÓĞÓÔ”•TQÑ’STÉËÛÜœ\[Z[YWİ\JBˆ\ÙÈ
+ÏH›İ[YJ	ÓĞĞÉËYÏ\Ù[‹YÊBˆ—ØYYH˜[ÙB‚ˆYˆ›İš[\Î‚ˆ]ØZ]Ù[™Y\ÜØYÙJÙ[‹›Y\ÜØYÙK\ÙËİÏ\Ù[‹œ˜[™ÛWÜXÊBˆ[ÙN‚ˆˆH]Û“XZÙ\Š
+BˆØ]™YH˜[ÙBˆYˆÙ[‹œÛİ\˜ÙWİ\›[™ÛÛ™šY×ÙXİÉÔÓÕTÑWÓS’É×N‚ˆ‹X]ÛŠ›İ[YJ	ÔÓÕTÑWÕT“	ÊKÙ[‹œÛİ\˜ÙWİ\›
+BˆYˆÙ[‹š\Ôİ\\‘Ü›İ\‚ˆˆH^˜WØœÊŠVÌBˆY\ÜØYÙHH\ÙÂˆœÈH‹˜Z[ÛY[JŠBˆ]ÛœÈH‚ˆYˆÙ[‹š\Ôİ\\‘Ü›İ\[™›İÙ[‹š\ÔN‚ˆY\ÜØYÙH
+ÏH›İ[YJ	ÓÓÓTÑÉÊBˆ[YˆÙ[‹š\Ôİ\\‘Ü›İ\[™Ù[‹š\ÔN‚ˆY\ÜØYÙH
+ÏH›İ[YJ	ÓÓÓTÑÉÊBˆY\ÜØYÙH
+ÏH›İ[YJ	ÓĞ“ÕÓTÑÉÊBˆ]ÛœËšX]ÛŠ›İ[YJ	ĞÒPÒ×ÔIÊKˆŞ›[İ\Ù\—ÚYH›İH‹	ÚXY\‰ÊBˆYˆÛÛ™šY×ÙXİÉÔĞQ‘WÓSÑI×H[™Ù[‹š\Ôİ\\‘Ü›İ\‚ˆ]ØZ]Ù[™Y\ÜØYÙJÙ[‹›Y\ÜØYÙKY\ÜØYÙK]ÛœË˜Z[ÛY[JŠKİÏ\Ù[‹œ˜[™ÛWÜXÊBˆ›\ÙÈH	×‰Âˆ›Üˆ[™^
+[šË˜[YJH[ˆ[[Y\˜]Jš[\Ëš][\Ê
+Kİ\LJN‚ˆ›\ÙÈ
+ÏHˆÚ[™^KˆH™YIŞÛ[šßIÏÛ˜[Y_OØO—ˆ‚ˆYˆ[Š\ÙË™[˜ÛÙJ
+H
+È›\ÙË™[˜ÛÙJ
+JHˆ
+Yˆ[ŠÛÛ™šY×ÙXİÉÒSPQÑTÉ×JHOH[ÙHL
+N‚ˆˆYˆÛÛ™šY×ÙXİÉÔĞQ‘WÓSÑI×N‚ˆYˆÙ[‹š\Ôİ\\‘Ü›İ\‚ˆ]ØZ]Ù[™Y\ÜØYÙJÙ[‹˜›İ[\ÙË\ÙÈ
+È›İ[YJ	ÓÓÓTÑÉÊH
+È›\ÙËœËİÏ\Ù[‹œ˜[™ÛWÜXÊBˆ[ÙN‚ˆ]ØZ]Ù[™Y\ÜØYÙJÙ[‹›Y\ÜØYÙKY\ÜØYÙH
+È›\ÙË]ÛœË˜Z[ÛY[JŠKİÏ\Ù[‹œ˜[™ÛWÜXÊBˆ[ÙN‚ˆYˆÛÛ™šY×ÙXİÉÔĞU‘WÓTÑÉ×H[™›İØ]™Y[™Ù[‹š\Ôİ\\‘Ü›İ\‚ˆØ]™YHYBˆ]ÛœËšX]ÛŠ›İ[YJ	ÔĞU‘WÓTÑÉÊK	ÜØ]™IË	Ù›Ûİ\‰ÊBˆ]ØZ]Ù[™Y\ÜØYÙJÙ[‹›Y\ÜØYÙKY\ÜØYÙH
+È›\ÙË]ÛœË˜Z[ÛY[JŠKİÏ\Ù[‹œ˜[™ÛWÜXÊBˆ]ØZ]ÛY\
+KJBˆ›\ÙÈH	ÉÂ‚ˆYˆ›\ÙÈOH	×‰Î‚ˆYˆÛÛ™šY×ÙXİÉÔĞQ‘WÓSÑI×N‚ˆYˆÙ[‹š\Ôİ\\‘Ü›İ\‚ˆ]ØZ]Ù[™Y\ÜØYÙJÙ[‹˜›İ[\ÙË\ÙÈ
+È›İ[YJ	ÓÓÓTÑÉÊH
+È›\ÙËœËİÏ\Ù[‹œ˜[™ÛWÜXÊBˆ[ÙN‚ˆ]ØZ]Ù[™Y\ÜØYÙJÙ[‹›Y\ÜØYÙKY\ÜØYÙH
+È›\ÙË]ÛœË˜Z[ÛY[JŠKİÏ\Ù[‹œ˜[™ÛWÜXÊBˆ[ÙN‚ˆYˆÛÛ™šY×ÙXİÉÔĞU‘WÓTÑÉ×H[™›İØ]™Y[™Ù[‹š\Ôİ\\‘Ü›İ\‚ˆØ]™YHYBˆ]ÛœËšX]ÛŠ›İ[YJ	ÔĞU‘WÓTÑÉÊK	ÜØ]™IË	Ù›Ûİ\‰ÊBˆ]ØZ]Ù[™Y\ÜØYÙJÙ[‹›Y\ÜØYÙKY\ÜØYÙH
+È›\ÙË]ÛœË˜Z[ÛY[JŠKİÏ\Ù[‹œ˜[™ÛWÜXÊB‚ˆ]ØZ]X^X™WÜÙ[™İÙYZÛWÛYXÚØ˜[\ŠˆÙ[‹›Y\ÜØYÙK˜Ú]šYÙ[‹›Y\ÜØYÙKšY\Ù\—ÚYÙ[‹YÊBˆˆYˆÙ[‹œÙYY‚ˆYˆÙ[‹›™]Ñ\‚ˆ]ØZ]ÛX[—İ\™Ù]
+Ù[‹›™]Ñ\ŠBˆ\Ş[˜ÈÚ]]Y]YWÙXİÛØÚÎ‚ˆYˆÙ[‹ZY[ˆ›Û—Ü]Y]YYİ\‚ˆ›Û—Ü]Y]YYİ\œ™[[İ™JÙ[‹ZY
+Bˆ]ØZ]İ\Ùœ›ÛWÜ]Y]YY
 
-        up_dir, up_name = up_path.rsplit('/', 1)
-        size = await get_path_size(up_dir)
-        if self.isLeech:
-            m_size = []
-            o_files = []
-            if not self.compress:
-                checked = False
-                LEECH_SPLIT_SIZE = user_dict.get(
-                    'split_size', False) or config_dict['LEECH_SPLIT_SIZE']
-                for dirpath, _, files in await sync_to_async(walk, up_dir, topdown=False):
-                    for file_ in files:
-                        f_path = ospath.join(dirpath, file_)
-                        f_size = await aiopath.getsize(f_path)
-                        if f_size > LEECH_SPLIT_SIZE:
-                            if not checked:
-                                checked = True
-                                async with download_dict_lock:
-                                    download_dict[self.uid] = SplitStatus(
-                                        up_name, size, gid, self)
-                                LOGGER.info(f"Splitting: {up_name}")
-                            res = await split_file(f_path, f_size, file_, dirpath, LEECH_SPLIT_SIZE, self)
-                            if not res:
-                                return
-                            if res == "errored":
-                                if f_size <= MAX_SPLIT_SIZE:
-                                    continue
-                                try:
-                                    await aioremove(f_path)
-                                except:
-                                    return
-                            elif not self.seed or self.newDir:
-                                try:
-                                    await aioremove(f_path)
-                                except:
-                                    return
-                            else:
-                                m_size.append(f_size)
-                                o_files.append(file_)
+Bˆ™]\›‚ˆ[ÙN‚ˆ\ÙÈ
+ÏH›İ[YJ	ÓWÕTIËZ[Y]\O[Z[YWİ\JBˆYˆZ[YWİ\HOH‘›Û\ˆ‚ˆ\ÙÈ
+ÏH›İ[YJ	ÓWÔÕP‘“Ó	Ë›Û\Y›Û\œÊBˆ\ÙÈ
+ÏH›İ[YJ	ÕÕSÑ’STÉËš[\ÏYš[\ÊBˆYˆ[šÈÜˆ˜ÛÛ™T][™ÛÛ™šY×ÙXİÉÔÓÓ‘WÔÑT•‘WÕT“	×H[™›İš]˜]N‚ˆYˆ
+\×ÑH\Ú[œİ[˜ÙJ[šËXİ
+JN‚ˆ›Üˆ\[šÈ[ˆ[šËš][\Ê
+N‚ˆ]ÛœËX]ÛŠ›İ[YJ	ÑÓS’ÉËÙ\Y\
+K[šÊBˆ[Yˆ[šÈ[™
+\Ù\—ÚYOHÕÓ‘T—ÒQÜˆ›İÛÛ™šY×ÙXİÉÑTĞP“WÑ’U‘WÓS’É×JN‚ˆ]ÛœËX]ÛŠ›İ[YJ	ĞÓÕQÓS’ÉÊK[šÊBˆ[ÙN‚ˆ\ÙÈ
+ÏH›İ[YJ	ÔÔU	ËÜ]\˜ÛÛ™T]
+BˆYˆ˜ÛÛ™T][™
+ÓÓ‘WÔÑT•‘WÕT“HÛÛ™šY×ÙXİÉÔÓÓ‘WÔÑT•‘WÕT“	×JN‚ˆ™[[İK]H˜ÛÛ™T]œÜ]
+	Î‰ËJBˆ\›Ü]H][Ëœ][İJ‰ŞÜ]IÊBˆÚ\™Wİ\›H‰ŞÔÓÓ‘WÔÑT•‘WÕT“KŞÜ™[[İ_KŞİ\›Ü]IÂˆYˆZ[YWİ\HOH‘›Û\ˆ‚ˆÚ\™Wİ\›
+ÏH	ËÉÂˆ]ÛœËX]ÛŠ›İ[YJ	ÔÓÓ‘WÓS’ÉÊKÚ\™Wİ\›
+Bˆ[Yˆ›İ˜ÛÛ™T][™›İ\×Ñ‚ˆS‘VÕT“HÙ[‹š[™^Û[šÈYˆÙ[‹™š]™WÚY[ÙHÛÛ™šY×ÙXİÉÒS‘VÕT“	×BˆYˆS‘VÕT“‚ˆ\›Ü]H][Ëœ][İJ‰ŞÛ˜[Y_IÊBˆÚ\™Wİ\›H‰ŞÒS‘VÕT“KŞİ\›Ü]IÂˆYˆZ[YWİ\HOH‘›Û\ˆ‚ˆÚ\™Wİ\›
+ÏH	ËÉÂˆ]ÛœËX]ÛŠ›İ[YJ	ÒS‘VÓS’×Ñ‰ÊKÚ\™Wİ\›
+Bˆ[ÙN‚ˆ]ÛœËX]ÛŠ›İ[YJ	ÒS‘VÓS’×Ñ	ÊKÚ\™Wİ\›
+BˆYˆZ[YWİ\Kœİ\İÚ]
 
-        up_limit = config_dict['QUEUE_UPLOAD']
-        all_limit = config_dict['QUEUE_ALL']
-        added_to_queue = False
-        async with queue_dict_lock:
-            dl = len(non_queued_dl)
-            up = len(non_queued_up)
-            if (all_limit and dl + up >= all_limit and (not up_limit or up >= up_limit)) or (up_limit and up >= up_limit):
-                added_to_queue = True
-                LOGGER.info(f"Added to Queue/Upload: {name}")
-                event = Event()
-                queued_up[self.uid] = event
-        if added_to_queue:
-            async with download_dict_lock:
-                download_dict[self.uid] = QueueStatus(
-                    name, size, gid, self, 'Up')
-            await event.wait()
-            async with download_dict_lock:
-                if self.uid not in download_dict:
-                    return
-            LOGGER.info(f'Start from Queued/Upload: {name}')
-        async with queue_dict_lock:
-            non_queued_up.add(self.uid)
-        if self.isLeech:
-            size = await get_path_size(up_dir)
-            for s in m_size:
-                size = size - s
-            LOGGER.info(f"Leech Name: {up_name}")
-            tg = TgUploader(up_name, up_dir, self)
-            tg_upload_status = TelegramStatus(
-                tg, size, self.message, gid, 'up', self.upload_details)
-            async with download_dict_lock:
-                download_dict[self.uid] = tg_upload_status
-            await update_all_messages()
-            await tg.upload(o_files, m_size, size)
-        elif self.upPath == 'gd':
-            size = await get_path_size(up_path)
-            LOGGER.info(f"Upload Name: {up_name}")
-            drive = GoogleDriveHelper(up_name, up_dir, self)
-            upload_status = GdriveStatus(drive, size, self.message, gid, 'up', self.upload_details)
-            async with download_dict_lock:
-                download_dict[self.uid] = upload_status
-            await update_all_messages()
+	Ú[XYÙIË	İšY[ÉË	Ø]Y[ÉÊJN‚ˆÚ\™Wİ\›ÈH‰ŞÒS‘VÕT“KŞİ\›Ü]OØO]šY]ÉÂˆ]ÛœËX]ÛŠ›İ[YJ	Õ’QU×ÓS’ÉÊKÚ\™Wİ\›ÊBˆˆ[ÙN‚ˆ\ÙÈ
+ÏH›İ[YJ	ÔÔU	ËÜ]\˜ÛÛ™T]
+Bˆ\ÙÈ
+ÏH›İ[YJ	ÓWĞĞÉËYÏ\Ù[‹YÊBˆY\ÜØYÙHH\ÙÂˆˆœÈH]Û“XZÙ\Š
+BˆÈÙXİ[ÛˆˆRT”“ÔˆÑÔÏ‚ˆYˆÛÛ™šY×ÙXİÉÓRT”“Ô—ÓÑ×ÒQ	×H[™›İÙ[‹™^Ù\ØÚ]‚ˆWØœÈHY\ÛÜJ]ÛœÊBˆYˆÙ[‹œÛİ\˜ÙWİ\›[™ÛÛ™šY×ÙXİÉÔÓÕTÑWÓS’É×N‚ˆWØœËX]ÛŠ›İ[YJ	ÔÓÕTÑWÕT“	ÊKÙ[‹œÛİ\˜ÙWİ\›
+BˆYˆÛÛ™šY×ÙXİÉÔĞU‘WÓTÑÉ×N‚ˆWØœËšX]ÛŠ›İ[YJ	ÔĞU‘WÓTÑÉÊK	ÜØ]™IË	Ù›Ûİ\‰ÊBˆÙ×Û\ÙÈH\İ
 
-            await sync_to_async(drive.upload, up_name, size, self.drive_id)
-        elif self.upPath == 'ddl':
-            size = await get_path_size(up_path)
-            LOGGER.info(f"Upload Name: {up_name} via DDL")
-            ddl = DDLUploader(self, up_name, up_dir)
-            ddl_upload_status = DDLStatus(ddl, size, self.message, gid, self.upload_details)
-            async with download_dict_lock:
-                download_dict[self.uid] = ddl_upload_status
-            await update_all_messages()
-            await ddl.upload(up_name, size)
-        else:
-            size = await get_path_size(up_path)
-            LOGGER.info(f"Upload Name: {up_name} via RClone")
-            RCTransfer = RcloneTransferHelper(self, up_name)
-            async with download_dict_lock:
-                download_dict[self.uid] = RcloneStatus(
-                    RCTransfer, self.message, gid, 'up', self.upload_details)
-            await update_all_messages()
-            await RCTransfer.upload(up_path, size)
+]ØZ]Ù[™][SY\ÜØYÙJÛÛ™šY×ÙXİÉÓRT”“Ô—ÓÑ×ÒQ	×KY\ÜØYÙKWØœË˜Z[ÛY[JŠKÙ[‹œ˜[™ÛWÜXÊJK˜[Y\Ê
+JVÌBˆYˆÙ[‹›[šÜÛÙÛ\ÙÎ‚ˆ\Ü[YHH]][YK››İÊ[Y^›Û™JÛÛ™šY×ÙXİÉÕSQV“Ó‘I×JJKœİ™[YJ	ÉYÉ[KÉ^K	RN‰SN‰TÈ	\	ÊBˆØœÈH]Û“XZÙ\Š
+BˆYˆÛÛ™šY×ÙXİÉÔĞU‘WÓTÑÉ×N‚ˆØœËšX]ÛŠ›İ[YJ	ÔĞU‘WÓTÑÉÊK	ÜØ]™IË	Ù›Ûİ\‰ÊBˆ]ØZ]Y]Y\ÜØYÙJÙ[‹›[šÜÛÙÛ\ÙË
+\ÙÈ
+È›İ[YJ	ÓS’Ô×ÔÓÕTÑIËÛY\Ü[YKÛİ\˜ÙO\Ù[‹œÛİ\˜ÙWÛ\ÙÊH
+È›İ[YJ	ÓÓÓTÑÉÊH
+Èˆ——H™YIŞÛÙ×Û\ÙË›[šßIÏÙ\ØØ\J˜[YJ_OØO—ˆŠKØœË˜Z[ÛY[JJJBˆˆÈÙXİ[ÛˆˆQTÔĞQÑHÑÔÏ‚ˆYˆÙ[‹š\ÔH[™Ù[‹š\Ôİ\\‘Ü›İ\‚ˆY\ÜØYÙH
+ÏH›İ[YJ	ÓWĞ“ÕÓTÑÉÊBˆ]ÛœÈH^˜WØœÊ]ÛœÊVÌBˆœÈH^˜WØœÊœÊVÌBˆYˆÙ[‹š\ÔN‚ˆYˆÙ[‹š\Ôİ\\‘Ü›İ\‚ˆ×ØˆHY\ÛÜJœÊHYˆÛÛ™šY×ÙXİÉÓRT”“Ô—ÓÑ×ÒQ	×H[ÙHY\ÛÜJ]ÛœÊBˆYˆÙ[‹œÛİ\˜ÙWİ\›[™ÛÛ™šY×ÙXİÉÔÓÕTÑWÓS’É×N‚ˆ]ÛœËX]ÛŠ›İ[YJ	ÔÓÕTÑWÕT“	ÊKÙ[‹œÛİ\˜ÙWİ\›
+BˆYˆ›İÛÛ™šY×ÙXİÉÔĞQ‘WÓSÑI×N‚ˆ×Ø‹X]ÛŠ›İ[YJ	ÔÓÕTÑWÕT“	ÊKÙ[‹œÛİ\˜ÙWİ\›
+BˆYˆÙ[‹˜›İ[\ÙÎ‚ˆ]ØZ]Ù[™Y\ÜØYÙJÙ[‹˜›İ[\ÙËY\ÜØYÙK]ÛœË˜Z[ÛY[JŠKİÏ\Ù[‹œ˜[™ÛWÜXÊBˆYˆÛÛ™šY×ÙXİÉÔĞU‘WÓTÑÉ×N‚ˆ×Ø‹šX]ÛŠ›İ[YJ	ÔĞU‘WÓTÑÉÊK	ÜØ]™IË	Ù›Ûİ\‰ÊBˆ×Ø‹šX]ÛŠ›İ[YJ	ĞÒPÒ×ÔIÊKˆŞ›[İ\Ù\—ÚYH›İH‹	ÚXY\‰ÊBˆ]ØZ]Ù[™Y\ÜØYÙJÙ[‹›Y\ÜØYÙKY\ÜØYÙK×Ø‹˜Z[ÛY[JŠKİÏ\Ù[‹œ˜[™ÛWÜXÊBˆ[ÙN‚ˆYˆÙ[‹œÛİ\˜ÙWİ\›[™ÛÛ™šY×ÙXİÉÔÓÕTÑWÓS’É×N‚ˆ]ÛœËX]ÛŠ›İ[YJ	ÔÓÕTÑWÕT“	ÊKÙ[‹œÛİ\˜ÙWİ\›
+Bˆ]ØZ]Ù[™Y\ÜØYÙJÙ[‹›Y\ÜØYÙKY\ÜØYÙK]ÛœË˜Z[ÛY[JŠKİÏ\Ù[‹œ˜[™ÛWÜXÊBˆ[ÙN‚ˆYˆÙ[‹œÛİ\˜ÙWİ\›[™ÛÛ™šY×ÙXİÉÔÓÕTÑWÓS’É×H[™
+›İÙ[‹š\Ôİ\\‘Ü›İ\Üˆ›İÛÛ™šY×ÙXİÉÔĞQ‘WÓSÑI×JN‚ˆ]ÛœËX]ÛŠ›İ[YJ	ÔÓÕTÑWÕT“	ÊKÙ[‹œÛİ\˜ÙWİ\›
+BˆYˆÛÛ™šY×ÙXİÉÔĞU‘WÓTÑÉ×H[™Ù[‹š\Ôİ\\‘Ü›İ\‚ˆ]ÛœËšX]ÛŠ›İ[YJ	ÔĞU‘WÓTÑÉÊK	ÜØ]™IË	Ù›Ûİ\‰ÊBˆ]ØZ]Ù[™Y\ÜØYÙJÙ[‹›Y\ÜØYÙKY\ÜØYÙK]ÛœË˜Z[ÛY[JŠKİÏ\Ù[‹œ˜[™ÛWÜXÊB‚ˆYˆÙ[‹œÙYY‚ˆYˆÙ[‹›™]Ñ\‚ˆ]ØZ]ÛX[—İ\™Ù]
+Ù[‹›™]Ñ\ŠBˆ[YˆÙ[‹˜ÛÛ\™\ÜÎ‚ˆ]ØZ]ÛX[—İ\™Ù]
+ˆÜÙ[‹™\ŸKŞÛ˜[Y_HŠBˆ\Ş[˜ÈÚ]]Y]YWÙXİÛØÚÎ‚ˆYˆÙ[‹ZY[ˆ›Û—Ü]Y]YYİ\‚ˆ›Û—Ü]Y]YYİ\œ™[[İ™JÙ[‹ZY
+Bˆ]ØZ]İ\Ùœ›ÛWÜ]Y]YY
 
-    async def onUploadComplete(self, link, size, files, folders, mime_type, name, rclonePath='', private=False):
-        if self.isSuperGroup and config_dict['INCOMPLETE_TASK_NOTIFIER'] and DATABASE_URL:
-            await DbManger().rm_complete_task(self.message.link)
-        user_id = self.message.from_user.id
-        name, _ = await format_filename(name, user_id, isMirror=not self.isLeech)
-        user_dict = user_data.get(user_id, {})
-        msg = BotTheme('NAME', Name="Task has been Completed!"if config_dict['SAFE_MODE'] and self.isSuperGroup else escape(name))
-        msg += BotTheme('SIZE', Size=get_readable_file_size(size))
-        msg += BotTheme('ELAPSE', Time=get_readable_time(time() - self.message.date.timestamp()))
-        msg += BotTheme('MODE', Mode=self.upload_details['mode'])
-        LOGGER.info(f'Task Done: {name}')
-        
-        buttons = ButtonMaker()
-        if self.isLeech:
-            msg += BotTheme('L_TOTAL_FILES', Files=folders)
-            if mime_type != 0:
-                msg += BotTheme('L_CORRUPTED_FILES', Corrupt=mime_type)
-            msg += BotTheme('L_CC', Tag=self.tag)
-            btn_added = False
+Bˆ™]\›‚ˆˆYˆÙ[‹˜›İ[\ÙÈ[™
+›İÛÛ™šY×ÙXİÉÑSUWÓS’ÔÉ×HÜˆÛÛ™šY×ÙXİÉĞÓPS—ÓÑ×ÓTÑÉ×JN‚ˆ]ØZ][]SY\ÜØYÙJÙ[‹˜›İ[\ÙÊBˆˆ]ØZ]ÛX[—ÙİÛ›ØY
+Ù[‹™\ŠBˆ\Ş[˜ÈÚ]İÛ›ØYÙXİÛØÚÎ‚ˆYˆÙ[‹ZY[ˆİÛ›ØYÙXİšÙ^\Ê
+N‚ˆ[İÛ›ØYÙXİÜÙ[‹ZYBˆÛİ[H[ŠİÛ›ØYÙXİ
+BˆYˆÛİ[OH‚ˆ]ØZ]Ù[‹˜ÛX[Š
+Bˆ[ÙN‚ˆ]ØZ]\]WØ[ÛY\ÜØYÙ\Ê
+B‚ˆ\Ş[˜ÈÚ]]Y]YWÙXİÛØÚÎ‚ˆYˆÙ[‹ZY[ˆ›Û—Ü]Y]YYİ\‚ˆ›Û—Ü]Y]YYİ\œ™[[İ™JÙ[‹ZY
+B‚ˆ]ØZ]İ\Ùœ›ÛWÜ]Y]YY
 
-            if not files:
-                await sendMessage(self.message, msg, photo=self.random_pic)
-            else:
-                btn = ButtonMaker()
-                saved = False
-                if self.source_url and config_dict['SOURCE_LINK']:
-                    btn.ubutton(BotTheme('SOURCE_URL'), self.source_url)
-                if self.isSuperGroup:
-                    btn = extra_btns(btn)[0]
-                message = msg
-                btns = btn.build_menu(2)
-                buttons = btn
-                if self.isSuperGroup and not self.isPM:
-                    message += BotTheme('L_LL_MSG')
-                elif self.isSuperGroup and self.isPM:
-                    message += BotTheme('L_LL_MSG')
-                    message += BotTheme('L_BOT_MSG')
-                    buttons.ibutton(BotTheme('CHECK_PM'), f"wzmlx {user_id} botpm", 'header')
-                if config_dict['SAFE_MODE'] and self.isSuperGroup:
-                    await sendMessage(self.message, message, buttons.build_menu(2), photo=self.random_pic)
-                fmsg = '\n'
-                for index, (link, name) in enumerate(files.items(), start=1):
-                    fmsg += f"{index}. <a href='{link}'>{name}</a>\n"
-                    if len(msg.encode() + fmsg.encode()) > (4000 if len(config_dict['IMAGES']) == 0 else 1000):
-                            
-                        if config_dict['SAFE_MODE']:
-                            if self.isSuperGroup:
-                                await sendMessage(self.botpmmsg, msg + BotTheme('L_LL_MSG') + fmsg, btns, photo=self.random_pic)
-                            else:
-                                await sendMessage(self.message, message + fmsg, buttons.build_menu(2), photo=self.random_pic)
-                        else:
-                            if config_dict['SAVE_MSG'] and not saved and self.isSuperGroup:
-                                saved = True
-                                buttons.ibutton(BotTheme('SAVE_MSG'), 'save', 'footer')
-                            await sendMessage(self.message, message + fmsg, buttons.build_menu(2), photo=self.random_pic)
-                        await sleep(1.5)
-                        fmsg = ''
+Bˆ]ØZ][]WÛ[šÜÊÙ[‹›Y\ÜØYÙJB‚‚ˆ\Ş[˜ÈYˆÛ‘İÛ›ØY\œ›ÜŠÙ[‹\œ›Ü‹]ÛS›Û™JN‚ˆ\Ş[˜ÈÚ]İÛ›ØYÙXİÛØÚÎ‚ˆYˆÙ[‹ZY[ˆİÛ›ØYÙXİšÙ^\Ê
+N‚ˆ[İÛ›ØYÙXİÜÙ[‹ZYBˆÛİ[H[ŠİÛ›ØYÙXİ
+BˆYˆÙ[‹œØ[YQ\ˆ[™Ù[‹ZY[ˆÙ[‹œØ[YQ\–Éİ\ÚÜÉ×N‚ˆÙ[‹œØ[YQ\–Éİ\ÚÜÉ×Kœ™[[İ™JÙ[‹ZY
+BˆÙ[‹œØ[YQ\–Éİİ[	×HOHBˆ\ÙÈH‰ÉÉÏO‘İÛ›ØYİÜYOØÚO‚¸¥(•\ÚÈ›ÜØˆÜÙ[‹YßB¸¥ Â¸¥(‘YHÎØˆÙ\ØØ\J\œ›ÜŠ_B¸¥(“[ÙNØˆÜÙ[‹\ØYÙ]Z[ÖÉÛ[ÙI×_B¸¥%ˆ‘[\ÙYØˆÙÙ]Ü™XYX›Wİ[YJ[YJ
+HHÙ[‹›Y\ÜØYÙK™]K[Y\İ[\
 
-                if fmsg != '\n':
-                    if config_dict['SAFE_MODE']:
-                        if self.isSuperGroup:
-                            await sendMessage(self.botpmmsg, msg + BotTheme('L_LL_MSG') + fmsg, btns, photo=self.random_pic)
-                        else:
-                            await sendMessage(self.message, message + fmsg, buttons.build_menu(2), photo=self.random_pic)
-                    else:
-                        if config_dict['SAVE_MSG'] and not saved and self.isSuperGroup:
-                            saved = True
-                            buttons.ibutton(BotTheme('SAVE_MSG'), 'save', 'footer')
-                        await sendMessage(self.message, message + fmsg, buttons.build_menu(2), photo=self.random_pic)
-            
-            if self.seed:
-                if self.newDir:
-                    await clean_target(self.newDir)
-                async with queue_dict_lock:
-                    if self.uid in non_queued_up:
-                        non_queued_up.remove(self.uid)
-                await start_from_queued()
-                return
-        else:
-            msg += BotTheme('M_TYPE', Mimetype=mime_type)
-            if mime_type == "Folder":
-                msg += BotTheme('M_SUBFOLD', Folder=folders)
-                msg += BotTheme('TOTAL_FILES', Files=files)
-            if link or rclonePath and config_dict['RCLONE_SERVE_URL'] and not private:
-                if (is_DDL := isinstance(link, dict)):
-                    for dlup, dlink in link.items():
-                        buttons.ubutton(BotTheme('DDL_LINK', Serv=dlup), dlink)
-                elif link and (user_id == OWNER_ID or not config_dict['DISABLE_DRIVE_LINK']):
-                        buttons.ubutton(BotTheme('CLOUD_LINK'), link)
-                else:
-                    msg += BotTheme('RCPATH', RCpath=rclonePath)
-                if rclonePath and (RCLONE_SERVE_URL := config_dict['RCLONE_SERVE_URL']):
-                    remote, path = rclonePath.split(':', 1)
-                    url_path = rutils.quote(f'{path}')
-                    share_url = f'{RCLONE_SERVE_URL}/{remote}/{url_path}'
-                    if mime_type == "Folder":
-                        share_url += '/'
-                    buttons.ubutton(BotTheme('RCLONE_LINK'), share_url)
-                elif not rclonePath and not is_DDL:
-                    INDEX_URL = self.index_link if self.drive_id else config_dict['INDEX_URL']
-                    if INDEX_URL:
-                        url_path = rutils.quote(f'{name}')
-                        share_url = f'{INDEX_URL}/{url_path}'
-                        if mime_type == "Folder":
-                            share_url += '/'
-                            buttons.ubutton(BotTheme('INDEX_LINK_F'), share_url)
-                        else:
-                            buttons.ubutton(BotTheme('INDEX_LINK_D'), share_url)
-                            if mime_type.startswith(('image', 'video', 'audio')):
-                                share_urls = f'{INDEX_URL}/{url_path}?a=view'
-                                buttons.ubutton(BotTheme('VIEW_LINK'), share_urls)
-                
-            else:
-                msg += BotTheme('RCPATH', RCpath=rclonePath)
-            msg += BotTheme('M_CC', Tag=self.tag)
-            message = msg
-            
-            btns = ButtonMaker()
-            # <Section : MIRROR LOGS>
-            if config_dict['MIRROR_LOG_ID'] and not self.excep_chat:
-                m_btns = deepcopy(buttons)
-                if self.source_url and config_dict['SOURCE_LINK']:
-                    m_btns.ubutton(BotTheme('SOURCE_URL'), self.source_url)
-                if config_dict['SAVE_MSG']:
-                    m_btns.ibutton(BotTheme('SAVE_MSG'), 'save', 'footer')
-                log_msg = list((await sendMultiMessage(config_dict['MIRROR_LOG_ID'], message, m_btns.build_menu(2), self.random_pic)).values())[0]
-                if self.linkslogmsg:
-                    dispTime = datetime.now(timezone(config_dict['TIMEZONE'])).strftime('%d/%m/%y, %I:%M:%S %p')
-                    _btns = ButtonMaker()
-                    if config_dict['SAVE_MSG']:
-                        _btns.ibutton(BotTheme('SAVE_MSG'), 'save', 'footer')
-                    await editMessage(self.linkslogmsg, (msg + BotTheme('LINKS_SOURCE', On=dispTime, Source=self.source_msg) + BotTheme('L_LL_MSG') + f"\n\n<a href='{log_msg.link}'>{escape(name)}</a>\n"), _btns.build_menu(1))
-            
-            # <Section : MESSAGE LOGS>
-            if self.isPM and self.isSuperGroup:
-                message += BotTheme('M_BOT_MSG')
-            buttons = extra_btns(buttons)[0]
-            btns = extra_btns(btns)[0]
-            if self.isPM:
-                if self.isSuperGroup:
-                    s_btn = deepcopy(btns) if config_dict['MIRROR_LOG_ID'] else deepcopy(buttons)
-                    if self.source_url and config_dict['SOURCE_LINK']:
-                        buttons.ubutton(BotTheme('SOURCE_URL'), self.source_url)
-                        if not config_dict['SAFE_MODE']:
-                            s_btn.ubutton(BotTheme('SOURCE_URL'), self.source_url)
-                    if self.botpmmsg:
-                        await sendMessage(self.botpmmsg, message, buttons.build_menu(2), photo=self.random_pic)
-                        if config_dict['SAVE_MSG']:
-                            s_btn.ibutton(BotTheme('SAVE_MSG'), 'save', 'footer')
-                        s_btn.ibutton(BotTheme('CHECK_PM'), f"wzmlx {user_id} botpm", 'header')
-                        await sendMessage(self.message, message, s_btn.build_menu(2), photo=self.random_pic)
-                else:
-                    if self.source_url and config_dict['SOURCE_LINK']:
-                        buttons.ubutton(BotTheme('SOURCE_URL'), self.source_url)
-                    await sendMessage(self.message, message, buttons.build_menu(2), photo=self.random_pic)
-            else:
-                if self.source_url and config_dict['SOURCE_LINK'] and (not self.isSuperGroup or not config_dict['SAFE_MODE']):
-                    buttons.ubutton(BotTheme('SOURCE_URL'), self.source_url)
-                if config_dict['SAVE_MSG'] and self.isSuperGroup:
-                    buttons.ibutton(BotTheme('SAVE_MSG'), 'save', 'footer')
-                await sendMessage(self.message, message, buttons.build_menu(2), photo=self.random_pic)
+J_IÉÉÂˆ]ØZ]Ù[™Y\ÜØYÙJÙ[‹›Y\ÜØYÙK\ÙË]ÛŠBˆYˆÛİ[OH‚ˆ]ØZ]Ù[‹˜ÛX[Š
+Bˆ[ÙN‚ˆ]ØZ]\]WØ[ÛY\ÜØYÙ\Ê
+B‚ˆYˆÙ[‹š\Ôİ\\‘Ü›İ\[™ÛÛ™šY×ÙXİÉÒSÓÓTUWÕTÒ×Ó“ÕQ’QT‰×H[™UPTÑWÕT“‚ˆ]ØZ]“X[™Ù\Š
+Kœ›WØÛÛ\]Wİ\ÚÊÙ[‹›Y\ÜØYÙK›[šÊB‚ˆ\Ş[˜ÈÚ]]Y]YWÙXİÛØÚÎ‚ˆYˆÙ[‹ZY[ˆ]Y]YYÙ‚ˆ]Y]YYÙÜÙ[‹ZYKœÙ]
 
-            if self.seed:
-                if self.newDir:
-                    await clean_target(self.newDir)
-                elif self.compress:
-                    await clean_target(f"{self.dir}/{name}")
-                async with queue_dict_lock:
-                    if self.uid in non_queued_up:
-                        non_queued_up.remove(self.uid)
-                await start_from_queued()
-                return
-        
-        if self.botpmmsg and (not config_dict['DELETE_LINKS'] or config_dict['CLEAN_LOG_MSG']):
-            await deleteMessage(self.botpmmsg)
-        
-        await clean_download(self.dir)
-        async with download_dict_lock:
-            if self.uid in download_dict.keys():
-                del download_dict[self.uid]
-            count = len(download_dict)
-        if count == 0:
-            await self.clean()
-        else:
-            await update_all_messages()
+Bˆ[]Y]YYÙÜÙ[‹ZYBˆYˆÙ[‹ZY[ˆ]Y]YYİ\‚ˆ]Y]YYİ\ÜÙ[‹ZYKœÙ]
 
-        async with queue_dict_lock:
-            if self.uid in non_queued_up:
-                non_queued_up.remove(self.uid)
+Bˆ[]Y]YYİ\ÜÙ[‹ZYBˆYˆÙ[‹ZY[ˆ›Û—Ü]Y]YYÙ‚ˆ›Û—Ü]Y]YYÙœ™[[İ™JÙ[‹ZY
+BˆYˆÙ[‹ZY[ˆ›Û—Ü]Y]YYİ\‚ˆ›Û—Ü]Y]YYİ\œ™[[İ™JÙ[‹ZY
+B‚ˆ]ØZ]İ\Ùœ›ÛWÜ]Y]YY
 
-        await start_from_queued()
-        await delete_links(self.message)
+Bˆ]ØZ]ÛY\
+ÊBˆ]ØZ]ÛX[—ÙİÛ›ØY
+Ù[‹™\ŠBˆYˆÙ[‹›™]Ñ\‚ˆ]ØZ]ÛX[—ÙİÛ›ØY
+Ù[‹›™]Ñ\ŠB‚ˆ\Ş[˜ÈYˆÛ•\ØY\œ›ÜŠÙ[‹\œ›ÜŠN‚ˆ\Ş[˜ÈÚ]İÛ›ØYÙXİÛØÚÎ‚ˆYˆÙ[‹ZY[ˆİÛ›ØYÙXİšÙ^\Ê
+N‚ˆ[İÛ›ØYÙXİÜÙ[‹ZYBˆÛİ[H[ŠİÛ›ØYÙXİ
+Bˆ\ÙÈH‰ÉÉÏO•\ØYİÜYOØÚO‚¸¥(•\ÚÈ›ÜØˆÜÙ[‹YßB¸¥ Â¸¥(‘YHÎØˆÙ\ØØ\J\œ›ÜŠ_B¸¥(“[ÙNØˆÜÙ[‹\ØYÙ]Z[ÖÉÛ[ÙI×_B¸¥%ˆ‘[\ÙYØˆÙÙ]Ü™XYX›Wİ[YJ[YJ
+HHÙ[‹›Y\ÜØYÙK™]K[Y\İ[\
 
+J_IÉÉÂˆ]ØZ]Ù[™Y\ÜØYÙJÙ[‹›Y\ÜØYÙK\ÙÊBˆYˆÛİ[OH‚ˆ]ØZ]Ù[‹˜ÛX[Š
+Bˆ[ÙN‚ˆ]ØZ]\]WØ[ÛY\ÜØYÙ\Ê
+B‚ˆYˆÙ[‹š\Ôİ\\‘Ü›İ\[™ÛÛ™šY×ÙXİÉÒSÓÓTUWÕTÒ×Ó“ÕQ’QT‰×H[™UPTÑWÕT“‚ˆ]ØZ]“X[™Ù\Š
+Kœ›WØÛÛ\]Wİ\ÚÊÙ[‹›Y\ÜØYÙK›[šÊB‚ˆ\Ş[˜ÈÚ]]Y]YWÙXİÛØÚÎ‚ˆYˆÙ[‹ZY[ˆ]Y]YYÙ‚ˆ]Y]YYÙÜÙ[‹ZYKœÙ]
 
-    async def onDownloadError(self, error, button=None):
-        async with download_dict_lock:
-            if self.uid in download_dict.keys():
-                del download_dict[self.uid]
-            count = len(download_dict)
-            if self.sameDir and self.uid in self.sameDir['tasks']:
-                self.sameDir['tasks'].remove(self.uid)
-                self.sameDir['total'] -= 1
-        msg = f'''<i><b>Download Stopped!</b></i>
-â”  <b>Task for:</b> {self.tag}
-â”ƒ
-â”  <b>Due To:</b> {escape(error)}
-â”  <b>Mode:</b> {self.upload_details['mode']}
-â”– <b>Elapsed:</b> {get_readable_time(time() - self.message.date.timestamp())}'''
-        await sendMessage(self.message, msg, button)
-        if count == 0:
-            await self.clean()
-        else:
-            await update_all_messages()
+Bˆ[]Y]YYÙÜÙ[‹ZYBˆYˆÙ[‹ZY[ˆ]Y]YYİ\‚ˆ]Y]YYİ\ÜÙ[‹ZYKœÙ]
 
-        if self.isSuperGroup and config_dict['INCOMPLETE_TASK_NOTIFIER'] and DATABASE_URL:
-            await DbManger().rm_complete_task(self.message.link)
+Bˆ[]Y]YYİ\ÜÙ[‹ZYBˆYˆÙ[‹ZY[ˆ›Û—Ü]Y]YYÙ‚ˆ›Û—Ü]Y]YYÙœ™[[İ™JÙ[‹ZY
+BˆYˆÙ[‹ZY[ˆ›Û—Ü]Y]YYİ\‚ˆ›Û—Ü]Y]YYİ\œ™[[İ™JÙ[‹ZY
+B‚ˆ]ØZ]İ\Ùœ›ÛWÜ]Y]YY
 
-        async with queue_dict_lock:
-            if self.uid in queued_dl:
-                queued_dl[self.uid].set()
-                del queued_dl[self.uid]
-            if self.uid in queued_up:
-                queued_up[self.uid].set()
-                del queued_up[self.uid]
-            if self.uid in non_queued_dl:
-                non_queued_dl.remove(self.uid)
-            if self.uid in non_queued_up:
-                non_queued_up.remove(self.uid)
-
-        await start_from_queued()
-        await sleep(3)
-        await clean_download(self.dir)
-        if self.newDir:
-            await clean_download(self.newDir)
-
-    async def onUploadError(self, error):
-        async with download_dict_lock:
-            if self.uid in download_dict.keys():
-                del download_dict[self.uid]
-            count = len(download_dict)
-        msg = f'''<i><b>Upload Stopped!</b></i>
-â”  <b>Task for:</b> {self.tag}
-â”ƒ
-â”  <b>Due To:</b> {escape(error)}
-â”  <b>Mode:</b> {self.upload_details['mode']}
-â”– <b>Elapsed:</b> {get_readable_time(time() - self.message.date.timestamp())}'''
-        await sendMessage(self.message, msg)
-        if count == 0:
-            await self.clean()
-        else:
-            await update_all_messages()
-
-        if self.isSuperGroup and config_dict['INCOMPLETE_TASK_NOTIFIER'] and DATABASE_URL:
-            await DbManger().rm_complete_task(self.message.link)
-
-        async with queue_dict_lock:
-            if self.uid in queued_dl:
-                queued_dl[self.uid].set()
-                del queued_dl[self.uid]
-            if self.uid in queued_up:
-                queued_up[self.uid].set()
-                del queued_up[self.uid]
-            if self.uid in non_queued_dl:
-                non_queued_dl.remove(self.uid)
-            if self.uid in non_queued_up:
-                non_queued_up.remove(self.uid)
-
-        await start_from_queued()
-        await sleep(3)
-        await clean_download(self.dir)
-        if self.newDir:
-            await clean_download(self.newDir)
+Bˆ]ØZ]ÛY\
+ÊBˆ]ØZ]ÛX[—ÙİÛ›ØY
+Ù[‹™\ŠBˆYˆÙ[‹›™]Ñ\‚ˆ]ØZ]ÛX[—ÙİÛ›ØY
+Ù[‹›™]Ñ\ŠB

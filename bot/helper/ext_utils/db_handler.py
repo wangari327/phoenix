@@ -130,6 +130,20 @@ class DbManger:
         await self.__db.users[bot_id].update_one({'_id': user_id}, {'$set': {key: doc_bin}}, upsert=True)
         self.__conn.close
 
+    async def get_weekly_leech_banter(self):
+        if self.__err:
+            return {}
+        data = await self.__db.settings.weekly_leech_banter.find_one({'_id': bot_id})
+        self.__conn.close()
+        return data or {}
+
+    async def update_weekly_leech_banter(self, data):
+        if self.__err:
+            return
+        await self.__db.settings.weekly_leech_banter.update_one(
+            {'_id': bot_id}, {'$set': data}, upsert=True)
+        self.__conn.close()
+
     async def get_pm_uids(self):
         if self.__err:
             return
