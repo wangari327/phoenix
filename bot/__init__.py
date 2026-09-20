@@ -23,6 +23,8 @@ from uvloop import install
 #faulthandler_enable()
 
 install()
+# Pyrogram's synchronous user client needs an event loop under uvloop.
+asyncio.set_event_loop(asyncio.new_event_loop())
 setdefaulttimeout(600)
 
 pyroutils.MIN_CHAT_ID = -999999999999
