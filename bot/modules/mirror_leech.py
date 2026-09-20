@@ -166,7 +166,7 @@ async def _mirror_leech(client, message, isQbit=False, isLeech=False, sameDir=No
     path = f'{DOWNLOAD_DIR}{message.id}{folder_name}'
 
     if len(text) > 1 and text[1].startswith('Tag: '):
-        tag, id_ = text[1].split('Tag: ')[1].split()
+        tag, id_ = text[1].split('Tag: ', 1)[1].rsplit(maxsplit=1)
         message.from_user = await client.get_users(id_)
         try:
             await message.unpin()
