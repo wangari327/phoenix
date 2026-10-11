@@ -42,7 +42,10 @@ getLogger("httpx").setLevel(ERROR)
 
 LOGGER = getLogger(__name__)
 
-load_dotenv('config.env', override=True)
+# Platform-provided variables (for example Railway service variables) must
+# remain authoritative over values in the repository's local config file.
+platform_env_keys = frozenset(environ)
+load_dotenv('config.env', override=False)
 
 Interval = []
 QbInterval = []
@@ -101,10 +104,16 @@ if DATABASE_URL:
     if old_config and old_config != current_config:
         db.settings.deployConfig.replace_one(
             {'_id': bot_id}, current_config, upsert=True)
-    elif config_dict := db.settings.config.find_one({'_id': bot_id}):
+    if (old_config == current_config or
+            'RAILWAY_ENVIRONMENT_ID' in platform_env_keys):
+        config_dict = db.settings.config.find_one({'_id': bot_id})
+    else:
+        config_dict = None
+    if config_dict:
         del config_dict['_id']
         for key, value in config_dict.items():
-            environ[key] = str(value)
+            if key not in platform_env_keys:
+                environ[key] = str(value)
     if pf_dict := db.settings.files.find_one({'_id': bot_id}):
         del pf_dict['_id']
         for key, value in pf_dict.items():
@@ -400,7 +409,7 @@ EQUAL_SPLITS = EQUAL_SPLITS.lower() == 'true'
 MEDIA_GROUP = environ.get('MEDIA_GROUP', '')
 MEDIA_GROUP = MEDIA_GROUP.lower() == 'true'
 
-BASE_URL_PORT = environ.get('BASE_URL_PORT', '')
+BASE_URL_PORT = environ.get('PORT') or environ.get('BASE_URL_PORT', '')
 BASE_URL_PORT = 80 if len(BASE_URL_PORT) == 0 else int(BASE_URL_PORT)
 
 BASE_URL = environ.get('BASE_URL', '').rstrip("/")
@@ -436,21 +445,7 @@ if len(RCLONE_SERVE_PASS) == 0:
     RCLONE_SERVE_PASS = ''
 
 STORAGE_THRESHOLD = environ.get('STORAGE_THRESHOLD', '')
-STORAGE_THRESHOLD = '' if len(STORAGE_THRESHOLD) == 0 else float(STORAGE_THRESHOLD)
-
-TORRENT_LIMIT = environ.get('TORRENT_LIMIT', '')
-TORRENT_LIMIT = '' if len(TORRENT_LIMIT) == 0 else float(TORRENT_LIMIT)
-
-DIRECT_LIMIT = environ.get('DIRECT_LIMIT', '')
-DIRECT_LIMIT = '' if len(DIRECT_LIMIT) == 0 else float(DIRECT_LIMIT)
-
-YTDLP_LIMIT = environ.get('YTDLP_LIMIT', '')
-YTDLP_LIMIT = '' if len(YTDLP_LIMIT) == 0 else float(YTDLP_LIMIT)
-
-GDRIVE_LIMIT = environ.get('GDRIVE_LIMIT', '')
-GDRIVE_LIMIT = '' if len(GDRIVE_LIMIT) == 0 else float(GDRIVE_LIMIT)
-
-CLONE_LIMIT = environ.get('CLONE_LIMIT', '')
+STO×Ý-¢G§²ÚîÆ­yÕ_LIMIT = environ.get('CLONE_LIMIT', '')
 CLONE_LIMIT = '' if len(CLONE_LIMIT) == 0 else float(CLONE_LIMIT)
 
 MEGA_LIMIT = environ.get('MEGA_LIMIT', '')
@@ -556,7 +551,7 @@ IMDB_TEMPLATE = environ.get('IMDB_TEMPLATE', '')
 if len(IMDB_TEMPLATE) == 0:
     IMDB_TEMPLATE = '''<b>Title: </b> {title} [{year}]
 <b>Also Known As:</b> {aka}
-<b>Rating ⭐️:</b> <i>{rating}</i>
+<b>Rating â­ï¸:</b> <i>{rating}</i>
 <b>Release Info: </b> <a href="{url_releaseinfo}">{release_date}</a>
 <b>Genre: </b>{genres}
 <b>IMDb URL:</b> {url}
@@ -589,7 +584,7 @@ MDL_TEMPLATE = environ.get('MDL_TEMPLATE', '')
 if len(MDL_TEMPLATE) == 0:
     MDL_TEMPLATE = '''<b>Title:</b> {title}
 <b>Also Known As:</b> {aka}
-<b>Rating ⭐️:</b> <i>{rating}</i>
+<b>Rating â­ï¸:</b> <i>{rating}</i>
 <b>Release Info:</b> {aired_date}
 <b>Genre:</b> {genres}
 <b>MyDramaList URL:</b> {url}

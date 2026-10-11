@@ -1,0 +1,16 @@
+FROM mysterysd/wzmlx:latest
+
+WORKDIR /usr/src/app
+RUN chmod 777 /usr/src/app
+
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Deliberately copy only runtime code. In particular, config.env must never be
+# baked into a hosted image; Railway service variables supply configuration.
+COPY bot ./bot
+COPY web ./web
+COPY qBittorrent ./qBittorrent
+COPY aria.sh start.railway.sh ./
+
+CMD ["bash", "start.railway.sh"]
